@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from random import sample
 
 class bd:
 
@@ -71,10 +72,26 @@ class bd:
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return sum([v[0] for v in valores])
 
+    def getListaGastosMes(self, m, y):
+        
+        #TRANSFORMA MES DE NUMERO PARA O NOME
+        m = self.months[m-1]
+
+        #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
+        show = f"SELECT * FROM {m} WHERE ano = '{y}'"
+
+        self.cur.execute(show)
+        gastos = self.cur.fetchall()
+
+        #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
+        return gastos
+
 a = bd()
+#print(a.getListaGastosMes(10, 2020))
 #print(a.getSaldoCarteira(1, '2020'))
 #a.insertReceita('OUTUBRO', '2020', '500')
 #a.createTableCarteira()
-#a.insertItem('OUTUBRO', '2020', 'PAGAMENTO NOTEBOOK', 250)
+#for i in sample([i for i in range(1000)], 27):
+#    a.insertItem('OUTUBRO', '2020', 'ALGUMA COISA', i)
 #for i in a.months:
 #    a.createTablesMonths(i)

@@ -19,6 +19,7 @@ class financeInterface(Frame):
         self.gold= 'PaleGoldenrod'
         self.azulClaro = 'PowderBlue'
         self.fontDefault = 'Monaco 12 bold'
+        self.fontTad = 'Monaco 10 bold'
 
         #DATA ATUAL
         self.day = date.today().day
@@ -28,6 +29,9 @@ class financeInterface(Frame):
         #MES CORRENTE PARA PESQUISAS
         self.currentMonth = self.month
         self.currentYear = date.today().year
+
+        #LISTA DE CORES DE ACORDO COM O VALOR DE CADA GASTO
+        self.colorsValores = ['LightGreen', 'PaleGreen', 'MediumSpringGreen', 'SpringGreen', 'LimeGreen', 'DarkGreen']
 
         #FUNÇÃO DA JANELA PRINCIPAL
         self.viewPrev()
@@ -66,6 +70,7 @@ class financeInterface(Frame):
 
         #TECLAS DE FUNCOES
         self.windowMain.bind("<F2>", self.keyPressed)
+        self.windowMain.bind("<F3>", self.keyPressed)
 
         self.windowMain.mainloop()
 
@@ -83,7 +88,7 @@ class financeInterface(Frame):
         
         elif l == 'F3':
             #ADICIONAR DINHEIRO A CARTEIRA
-            pass
+            self.showGastos()
         
     def setValoresCGD(self, m, y):
 
@@ -96,6 +101,65 @@ class financeInterface(Frame):
         self.lblCarteira['text'] = 'R$ {}'.format(str(valorCarteira).replace('.0', '.00'))
         self.lblGastosPlanejados['text'] = 'R$ {}'.format(str(valorGastos).replace('.0', '.00'))
         self.lblDiferenca['text'] = 'R$ {}'.format(str(valorDisponivel).replace('.0', '.00'))
+
+    def showGastos(self):
+
+        self.windowShowGastos = Tk()
+        self.windowShowGastos.geometry('890x680+10+10')
+        self.windowShowGastos.resizable(False, False)
+        self.windowShowGastos.title('FINANCE')
+        self.windowShowGastos['bg'] = self.gold
+
+        #LINHAS E COLUNAS DO GRID
+        r = 0
+        c = 0
+
+        for i, g in enumerate(self.bancoDados.getListaGastosMes(self.currentMonth, self.currentYear)):
+            
+            if i > 27:
+                break
+
+            #AO COMPLETAR 4 GASTOS EM UMA LINHA AVANÇA PARA OUTRA
+            if i % 4 == 0: 
+                c = 0
+                r += 1
+
+            #CRIAR O GASTO DO MÊS
+            self.createTadGastos(r, c, self.currentMonth, g[0], g[1], g[2])
+            c += 1
+
+        self.windowShowGastos.mainloop()
+
+    def createTadGastos(self, r, c, mes, ano, item, valor):
+        
+        backGround = 'white'
+        foreColor = 'black'
+
+        if valor < 51:
+            backGround = self.colorsValores[0]
+
+        elif valor < 101:
+            backGround = self.colorsValores[1]
+
+        elif valor < 201:
+            backGround = self.colorsValores[1]
+
+        elif valor < 301:
+            backGround = self.colorsValores[3]
+
+        elif valor < 501:
+            backGround = self.colorsValores[4]
+            foreColor = 'white'
+
+        elif valor > 500:
+            backGround = self.colorsValores[5]
+            foreColor = 'white'
+
+        print(backGround)
+
+        #CRIA UM BOTÃO PARA GASTO
+        lblItem = Button(self.windowShowGastos, text=f'{item[:14]}\nR$ {valor}', font=self.fontTad, bg=backGround, fg=foreColor, width=20, height=4)
+        lblItem.grid(row=r, column=c, pady=5, padx=5)
 
     def insertValorCarteira(self):
         pass
