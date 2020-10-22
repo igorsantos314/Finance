@@ -61,7 +61,7 @@ class bd:
     def getSaldoCarteira(self, m, y):
 
         #TRANSFORMA MES DE NUMERO PARA O NOME
-        m = self.months[m-1]
+        m = self.months[m-1][:3]
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
         show = f"SELECT valor FROM CARTEIRA WHERE ano = '{y}' AND mes = '{m}'"
