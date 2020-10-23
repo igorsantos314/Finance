@@ -177,12 +177,12 @@ class financeInterface(Frame):
                 r += 1
 
             #CRIAR O GASTO DO MÊS
-            self.createTadGastos(r, c, self.currentMonth, g[0], g[1], g[2])
+            self.createTadGastos(r, c, self.currentMonth, g[0], g[1], g[2], g[3])
             c += 1
 
         self.windowShowGastos.mainloop()
 
-    def createTadGastos(self, r, c, mes, ano, item, valor):
+    def createTadGastos(self, r, c, mes, ind, ano, item, valor):
         
         backGround = 'white'
         foreColor = 'black'
@@ -210,8 +210,17 @@ class financeInterface(Frame):
         #print(backGround)
 
         #CRIA UM BOTÃO PARA GASTO
-        lblItem = Button(self.windowShowGastos, text=f'{item[:14]}\nR$ {valor}', font=self.fontTad, bg=backGround, fg=foreColor, width=20, height=4)
+        lblItem = Button(self.windowShowGastos, text=f'{item[:14]}\nR$ {valor}', font=self.fontTad, bg=backGround, fg=foreColor, width=20, height=4, command=lambda : self.deleteDespesa(ind, mes))
         lblItem.grid(row=r, column=c, pady=5, padx=5)
+
+    def deleteDespesa(self, ind, mes):
+
+        #PERGUNTAR SE DESEJA DELETAR A DESPESA
+        if messagebox.askyesno('', f'Deseeja Deletar?') == True:
+            self.bancoDados.dropDespesa(mes, ind)
+
+            #MENSAGEM DE SUCESSO
+            messagebox.showinfo('', 'Deletado com Sucesso !')
 
     def insertValorCarteira(self):
         
@@ -249,7 +258,6 @@ class financeInterface(Frame):
         etValor.place(x=20, y=90)   
 
         def save():
-            
             #ADICIONAR VALOR A CARTEIRA
             try:
                 mes = comboMes.get()
@@ -262,10 +270,10 @@ class financeInterface(Frame):
                 self.setValoresCGD(self.currentMonth, self.currentYear)
                 self.windowCarteira.destroy()
 
-                messagebox.showinfo('', 'RECEITA ADICIONADA COM SUCESSO !')
+                messagebox.showinfo('', 'Receteita Adicionada com Sucesso !')
 
             except:
-                messagebox.showerror('', 'OCORREU UM ERRO !')
+                messagebox.showerror('', 'Ocorreu um Erro !')
 
         #BOTAO SE SALVAMENTO
         btSave = Button(self.windowCarteira, text='SALVAR', bg='MediumSpringGreen', command=save)
@@ -287,7 +295,7 @@ class financeInterface(Frame):
 
         comboMes = ttk.Combobox(self.windowDespesa, width= 15) 
 
-        comboMes['values'] = tuple([self.bancoDados.months[i] for i in range(0, 12)])
+        comboMes['values'] = tuple([i for i in range(1, 12)])
         comboMes.current(self.month-1)
         comboMes.place(x=20, y=40)
 
@@ -318,8 +326,27 @@ class financeInterface(Frame):
         etValor = Entry(self.windowDespesa, width=9)
         etValor.place(x=170, y=90)
 
+        def save():
+
+            try:
+                mes = int(comboMes.get())
+                ano = comboAno.get()
+                item = comboDespesa.get()
+                valor = float(etValor.get())
+
+                self.bancoDados.insertItem(mes, ano, item, valor)
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Adicionado Com Sucesso !')
+
+                #ATUALIZA OS VALORES E O TITULO DA JANELA
+                self.setTitleWindowMain()
+
+            except:
+                messagebox.showerror('', 'Ocorreu um Erro !')
+
         #BOTAO SE SALVAMENTO
-        btSave = Button(self.windowDespesa, text='SALVAR', bg='MediumSpringGreen', command='')
+        btSave = Button(self.windowDespesa, text='SALVAR', bg='MediumSpringGreen', command=save)
         btSave.place(x=170, y=120)
 
         self.windowDespesa.mainloop()

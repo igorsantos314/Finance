@@ -17,7 +17,7 @@ class bd:
 
     def createTablesMonths(self, m):
         #CRIAR TABELAS DE MESES
-        command = 'CREATE TABLE {} (ano TEXT, Item TEXT, valor REAL)'.format(m)
+        command = 'CREATE TABLE {} (ID INTEGER, ano TEXT, Item TEXT, valor REAL)'.format(m)
         
         self.cur.execute(command)
         self.conection.commit()
@@ -29,11 +29,31 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+    def getLastID(self, m, y):
+        
+        #PEGA A LISTA DE GASTOS
+        gastos = self.getListaGastosMes(m, y)
+
+        #VERIFICA SE É NULA
+        if len(gastos) == 0:
+            return 0
+
+        else:
+            #RETORNA O NOVO ID
+            return int(gastos[-1][0]) + 1 
+
     def insertItem(self, m, ano, Item, valor):
+        
+        #PEGA O UTLIMO INDICE
+        ind = self.getLastID(m, ano)
+
+        #TRANSFORMA MES DE NUMERO PARA O NOME
+        m = self.months[m-1]
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
-        command = f'INSERT INTO {m} (ano, Item, valor) VALUES("{ano}", "{Item}", {valor})'
-        
+        command = f'INSERT INTO {m} (ID, ano, Item, valor) VALUES({ind}, "{ano}", "{Item}", {valor})'
+        print(command)
+
         self.cur.execute(command)
         self.conection.commit()
 
@@ -86,12 +106,22 @@ class bd:
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return gastos
 
+    def dropDespesa(self, mes, ind):
+
+        #DELETAR DESPESA
+        command = f'DELETE FROM {self.months[mes-1]} WHERE id = {ind}'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
 a = bd()
+#for i in a.months:
+#    a.createTablesMonths(i)
 #print(a.getListaGastosMes(10, 2020))
 #print(a.getSaldoCarteira(1, '2020'))
 #a.insertReceita('OUTUBRO', '2020', '500')
 #a.createTableCarteira()
 #for i in sample([i for i in range(1000)], 27):
-#    a.insertItem('OUTUBRO', '2020', 'ALGUMA COISA', i)
+#    a.insertItem(10, '2020', 'ALGUMA COISA', i)
 #for i in a.months:
 #    a.createTablesMonths(i)
